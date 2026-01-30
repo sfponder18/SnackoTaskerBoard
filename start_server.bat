@@ -17,4 +17,5 @@ echo   Press Ctrl+C to stop
 echo.
 
 cd /d "%~dp0"
+start http://localhost:%PORT%
 python -m http.server %PORT%
