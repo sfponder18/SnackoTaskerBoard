@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>493rd FS - SNACKO OPS</title>
+<style>
+  /* ---------- RESET & BASE ---------- */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  @font-face {
+    font-family: 'Pixel';
+    src: local('Courier New'), local('Consolas'), local('monospace');
+  }
+
+  :root {
+    --red:    #d42a2a;
+    --dk-red: #8b0000;
+    --gold:   #f5c842;
+    --green:  #39ff14;
+    --cyan:   #00e5ff;
+    --bg:     #0a0a12;
+    --card:   #12121e;
+    --border: #2a2a3a;
+    --text:   #e0e0e0;
+    --dim:    #777;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier New', Consolas, 'Lucida Console', monospace;
+    overflow-x: hidden;
+  }
+
+  /* ---------- SCANLINE OVERLAY ---------- */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,.15) 2px,
+      rgba(0,0,0,.15) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ---------- CRT VIGNETTE ---------- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,.55) 100%);
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* ---------- HEADER ---------- */
+  .header {
+    text-align: center;
+    padding: 18px 10px 10px;
+    border-bottom: 3px solid var(--red);
+    background: linear-gradient(180deg, #1a0a0a 0%, var(--bg) 100%);
+  }
+  .header h1 {
+    font-size: clamp(16px, 2.8vw, 32px);
+    color: var(--red);
+    text-shadow: 0 0 10px var(--red), 0 0 30px var(--dk-red);
+    letter-spacing: 6px;
+    font-weight: 900;
+    animation: flicker 4s infinite alternate;
+  }
+  .header h2 {
+    font-size: clamp(10px, 1.6vw, 20px);
+    color: var(--gold);
+    text-shadow: 0 0 6px var(--gold);
+    margin-top: 4px;
+    letter-spacing: 8px;
+    font-weight: 700;
+  }
+  .skull-row {
+    font-size: clamp(14px, 2.2vw, 28px);
+    margin-top: 2px;
+    filter: drop-shadow(0 0 4px var(--red));
+  }
+
+  @keyframes flicker {
+    0%, 93%, 95%, 97%, 100% { opacity:1; }
+    94% { opacity:.8; }
+    96% { opacity:.9; }
+  }
+
+  /* ---------- MARQUEE ---------- */
+  .marquee-bar {
+    background: var(--dk-red);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 6px 0;
+    border-bottom: 2px solid var(--red);
+  }
+  .marquee-text {
+    display: inline-block;
+    font-size: clamp(8px, 1.2vw, 14px);
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 2px;
+    animation: scroll-left 28s linear infinite;
+  }
+  @keyframes scroll-left {
+    0%   { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ---------- FLOW-CHART LAYOUT ---------- */
+  .dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 10px 10px;
+  }
+
+  .leader-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 14px;
+    text-align: center;
+    position: relative;
+    transition: border-color .3s, box-shadow .3s;
+    min-width: 170px;
+  }
+  .card:hover {
+    border-color: var(--red);
+    box-shadow: 0 0 12px rgba(212,42,42,.4);
+  }
+
+  .card.leader {
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(245,200,66,.3);
+    min-width: 240px;
+  }
+  .card.leader:hover {
+    box-shadow: 0 0 22px rgba(245,200,66,.5);
+    border-color: var(--gold);
+  }
+  .card.leader .card-name {
+    color: var(--gold);
+    text-shadow: 0 0 6px var(--gold);
+  }
+
+  .card-name {
+    font-size: clamp(9px, 1.2vw, 14px);
+    color: var(--cyan);
+    margin-bottom: 4px;
+    word-break: break-word;
+    font-weight: 700;
+  }
+  .card-role {
+    font-size: clamp(7px, .9vw, 11px);
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    letter-spacing: 2px;
+    font-weight: 700;
+  }
+  .card-task {
+    font-size: clamp(6px, .8vw, 10px);
+    color: var(--dim);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+  .status {
+    display: inline-block;
+    font-size: clamp(6px, .75vw, 9px);
+    padding: 2px 8px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .status-active   { background: #0a2a0a; color: var(--green); border: 1px solid var(--green); }
+  .status-standby  { background: #2a2a0a; color: var(--gold);  border: 1px solid var(--gold);  }
+  .status-en-route { background: #0a1a2a; color: var(--cyan);  border: 1px solid var(--cyan);  }
+  .status-complete { background: #1a0a2a; color: #c77dff;      border: 1px solid #c77dff;      }
+  .status-planning { background: #2a1a0a; color: #ff9f43;      border: 1px solid #ff9f43;      }
+
+  /* ---- Connector lines ---- */
+  .connector-vertical {
+    width: 3px;
+    height: 28px;
+    background: var(--red);
+    box-shadow: 0 0 6px var(--red);
+  }
+  .connector-horizontal-bar {
+    height: 3px;
+    background: var(--red);
+    box-shadow: 0 0 6px var(--red);
+    align-self: stretch;
+    margin: 0 40px;
+  }
+  .connector-drops {
+    display: grid;
+    align-self: stretch;
+    margin: 0 40px;
+  }
+  .connector-drops .drop {
+    display: flex;
+    justify-content: center;
+  }
+  .connector-drops .drop-line {
+    width: 3px;
+    height: 22px;
+    background: var(--red);
+    box-shadow: 0 0 6px var(--red);
+  }
+
+  /* ---- Members grid ---- */
+  .members-grid {
+    display: grid;
+    align-self: stretch;
+    margin: 0 40px;
+    gap: 10px;
+  }
+
+  @media (min-width: 1100px) {
+    .members-grid, .connector-drops {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  @media (max-width: 1099px) and (min-width: 700px) {
+    .members-grid, .connector-drops {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 699px) {
+    .members-grid, .connector-drops {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* ---------- SOUND BOARD ---------- */
+  .soundboard {
+    margin: 14px auto 0;
+    text-align: center;
+    padding: 10px;
+  }
+  .soundboard h3 {
+    font-size: clamp(9px, 1.1vw, 13px);
+    color: var(--red);
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+    text-shadow: 0 0 6px var(--red);
+    font-weight: 700;
+  }
+  .sound-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .snd-btn {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: clamp(7px, .8vw, 10px);
+    font-weight: 700;
+    padding: 8px 14px;
+    border: 2px solid var(--red);
+    background: var(--card);
+    color: var(--gold);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all .15s;
+    border-radius: 3px;
+  }
+  .snd-btn:hover {
+    background: var(--dk-red);
+    border-color: var(--gold);
+    box-shadow: 0 0 12px var(--red);
+    transform: scale(1.05);
+  }
+  .snd-btn:active {
+    transform: scale(.95);
+  }
+  .snd-btn.playing {
+    animation: btn-pulse .4s ease;
+  }
+  @keyframes btn-pulse {
+    0%, 100% { box-shadow: 0 0 4px var(--red); }
+    50%      { box-shadow: 0 0 24px var(--gold), 0 0 40px var(--red); }
+  }
+
+  /* ---------- EDITABLE FIELDS ---------- */
+  .editable {
+    cursor: text;
+    border-bottom: 1px dashed transparent;
+    transition: border-color .2s, background .2s;
+    outline: none;
+    border-radius: 2px;
+    padding: 0 2px;
+    min-width: 20px;
+    display: inline-block;
+  }
+  .editable:hover {
+    border-bottom-color: var(--gold);
+  }
+  .editable:focus {
+    border-bottom-color: var(--gold);
+    background: rgba(245, 200, 66, .1);
+    box-shadow: 0 0 6px rgba(245, 200, 66, .2);
+  }
+
+  /* ---------- FOOTER ---------- */
+  .footer {
+    text-align: center;
+    padding: 10px;
+    font-size: clamp(7px, .75vw, 9px);
+    color: var(--dim);
+    border-top: 1px solid var(--border);
+    margin-top: 12px;
+  }
+
+  /* ---------- STARS BG ---------- */
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+  .stars span {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 3s infinite alternate;
+  }
+  @keyframes twinkle {
+    0% { opacity:.2; } 100% { opacity:.8; }
+  }
+</style>
+</head>
+<body>
+
+<!-- background stars -->
+<div class="stars" id="stars-container"></div>
+
+<div id="app"></div>
+
+<script>
+// ============================================================
+//  INLINE DATA — edit this section to update the board
+//  (or SSH in and edit this file directly with nano/vi)
+// ============================================================
+const DATA = {
+  squadronTitle: "493rd FS SNACKO OPS",
+  subtitle: "THE GRIM REAPERS",
+  marqueeMessage: ">>> REAPER SNACKO OPS -- KEEPING THE 493rd FED AND FUELED -- NO SNACK LEFT BEHIND <<<",
+
+  leader: {
+    name: "SSgt Snuffy",
+    role: "HEAD SNACKO",
+    task: "Oversee all snack operations",
+    status: "ACTIVE"
+  },
+
+  members: [
+    { name: "A1C Player1",  role: "SUPPLY RUNNER",    task: "Costco run - bulk snacks",      status: "EN ROUTE" },
+    { name: "A1C Player2",  role: "INVENTORY MGR",    task: "Count remaining stock",          status: "ACTIVE"   },
+    { name: "SrA Player3",  role: "FUNDS KEEPER",     task: "Collect snack bar dues",         status: "STANDBY"  },
+    { name: "A1C Player4",  role: "FRIDGE TECH",      task: "Restock energy drinks",          status: "ACTIVE"   },
+    { name: "Amn Player5",  role: "MORALE OFFICER",   task: "Plan pizza Friday",              status: "PLANNING" },
+    { name: "A1C Player6",  role: "QUALITY CONTROL",  task: "Taste-test new snacks",          status: "ACTIVE"   },
+    { name: "SrA Player7",  role: "LOGISTICS",        task: "Coordinate delivery schedule",   status: "STANDBY"  },
+    { name: "A1C Player8",  role: "COMMS",            task: "Update snack menu board",        status: "ACTIVE"   },
+    { name: "Amn Player9",  role: "CLEANUP CREW",     task: "Break room sanitation",          status: "COMPLETE" }
+  ],
+
+  // Sound buttons — drop your .mp3 files in a "sounds" folder
+  // next to this html file, then update the filenames here.
+  sounds: [
+    { label: "MISSION START", file: "sounds/mission_start.mp3" },
+    { label: "LEVEL UP",      file: "sounds/level_up.mp3"      },
+    { label: "TASK COMPLETE",  file: "sounds/task_complete.mp3" },
+    { label: "GAME OVER",     file: "sounds/game_over.mp3"     },
+    { label: "BONUS",         file: "sounds/bonus.mp3"         },
+    { label: "ALERT",         file: "sounds/alert.mp3"         }
+  ]
+};
+
+// ============================================================
+//  GENERATE STARS
+// ============================================================
+(function makeStars() {
+  const c = document.getElementById('stars-container');
+  for (let i = 0; i < 90; i++) {
+    const s = document.createElement('span');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top  = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    s.style.opacity = Math.random() * .6 + .1;
+    c.appendChild(s);
+  }
+})();
+
+// ============================================================
+//  RENDER
+// ============================================================
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function statusClass(s) {
+  const map = {
+    'active':   'status-active',
+    'standby':  'status-standby',
+    'en route': 'status-en-route',
+    'complete': 'status-complete',
+    'planning': 'status-planning',
+  };
+  return map[(s||'').toLowerCase()] || 'status-active';
+}
+
+function makeCard(person, isLeader, index) {
+  const key = isLeader ? 'leader' : 'member-' + index;
+  return `
+    <div class="card ${isLeader ? 'leader' : ''}">
+      <div class="card-name editable" contenteditable="true" data-key="${key}" data-field="name">${esc(person.name)}</div>
+      <div class="card-role editable" contenteditable="true" data-key="${key}" data-field="role">${esc(person.role)}</div>
+      <div class="card-task editable" contenteditable="true" data-key="${key}" data-field="task">${esc(person.task)}</div>
+      <span class="status ${statusClass(person.status)}">${esc(person.status)}</span>
+    </div>`;
+}
+
+function render(data) {
+  const app = document.getElementById('app');
+
+  const memberCards = data.members.map((m, i) => makeCard(m, false, i)).join('');
+  const drops = data.members.map(() =>
+    '<div class="drop"><div class="drop-line"></div></div>'
+  ).join('');
+
+  const soundBtns = data.sounds.map(s =>
+    `<button class="snd-btn" data-src="${esc(s.file)}" onclick="playSound(this)">${esc(s.label)}</button>`
+  ).join('');
+
+  app.innerHTML = `
+    <div class="header">
+      <div class="skull-row">\u2620 \u2620 \u2620</div>
+      <h1 class="editable" contenteditable="true" data-key="header" data-field="squadronTitle">${esc(data.squadronTitle)}</h1>
+      <h2 class="editable" contenteditable="true" data-key="header" data-field="subtitle">${esc(data.subtitle)}</h2>
+    </div>
+
+    <div class="marquee-bar">
+      <span class="marquee-text">${esc(data.marqueeMessage)}</span>
+    </div>
+
+    <div class="dashboard">
+      <div class="leader-section">
+        ${makeCard(data.leader, true, -1)}
+      </div>
+
+      <div class="connector-vertical"></div>
+      <div class="connector-horizontal-bar"></div>
+      <div class="connector-drops">${drops}</div>
+      <div class="members-grid">${memberCards}</div>
+    </div>
+
+    <div class="soundboard">
+      <h3>\u266B SOUNDBOARD \u266B</h3>
+      <div class="sound-buttons">${soundBtns}</div>
+    </div>
+
+    <div class="footer">
+      493rd FIGHTER SQUADRON \u2022 SNACKO TASKER BOARD
+    </div>
+  `;
+}
+
+// ============================================================
+//  SOUND PLAYER
+// ============================================================
+let currentAudio = null;
+function playSound(btn) {
+  const src = btn.getAttribute('data-src');
+  if (!src) return;
+
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+
+  const audio = new Audio(src);
+  currentAudio = audio;
+
+  btn.classList.add('playing');
+  audio.play().catch(err => {
+    console.warn('Sound file not loaded yet:', err.message);
+  });
+  audio.addEventListener('ended', () => {
+    btn.classList.remove('playing');
+    currentAudio = null;
+  });
+  setTimeout(() => btn.classList.remove('playing'), 500);
+}
+
+// ============================================================
+//  EDITABLE FIELDS — inline editing with localStorage
+// ============================================================
+function loadSavedData() {
+  const saved = localStorage.getItem('snackoBoard');
+  if (!saved) return;
+  try {
+    const parsed = JSON.parse(saved);
+    if (parsed.squadronTitle) DATA.squadronTitle = parsed.squadronTitle;
+    if (parsed.subtitle) DATA.subtitle = parsed.subtitle;
+    if (parsed.leader) Object.assign(DATA.leader, parsed.leader);
+    if (parsed.members) {
+      parsed.members.forEach(function(m, i) {
+        if (DATA.members[i]) Object.assign(DATA.members[i], m);
+      });
+    }
+  } catch(e) {
+    console.warn('Could not load saved data:', e);
+  }
+}
+
+function saveData() {
+  const toSave = {
+    squadronTitle: DATA.squadronTitle,
+    subtitle: DATA.subtitle,
+    leader: { name: DATA.leader.name, role: DATA.leader.role, task: DATA.leader.task },
+    members: DATA.members.map(function(m) {
+      return { name: m.name, role: m.role, task: m.task };
+    })
+  };
+  localStorage.setItem('snackoBoard', JSON.stringify(toSave));
+}
+
+function setupEditListeners() {
+  document.getElementById('app').addEventListener('blur', function(e) {
+    const el = e.target;
+    if (!el.classList.contains('editable')) return;
+
+    const key   = el.getAttribute('data-key');
+    const field = el.getAttribute('data-field');
+    const value = el.textContent.trim();
+
+    if (key === 'header') {
+      DATA[field] = value;
+    } else if (key === 'leader') {
+      DATA.leader[field] = value;
+    } else if (key && key.startsWith('member-')) {
+      const idx = parseInt(key.split('-')[1], 10);
+      if (DATA.members[idx]) DATA.members[idx][field] = value;
+    }
+
+    saveData();
+  }, true); // useCapture so blur (which doesn't bubble) is caught
+
+  // Prevent Enter from inserting newlines — commit edit instead
+  document.getElementById('app').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target.classList.contains('editable')) {
+      e.preventDefault();
+      e.target.blur();
+    }
+  });
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+loadSavedData();
+render(DATA);
+setupEditListeners();
+</script>
+</body>
+</html>
