@@ -1,32 +1,35 @@
 #!/bin/bash
 # ============================================================
-#  493rd FS SNACKO OPS - Dashboard Server
-#  Run this on the Raspberry Pi Zero to serve the dashboard.
+#  493rd FS SNACKO OPS - Dashboard Launcher
+#  Starts the server and opens Chromium in kiosk mode.
 #
-#  Usage:
+#  First time setup:
 #    chmod +x start_server.sh
+#
+#  Then just double-click or run:
 #    ./start_server.sh
-#
-#  Then open Chromium in kiosk mode on the Pi's display:
-#    chromium-browser --kiosk --noerrdialogs --disable-infobars \
-#      --disable-session-crashed-bubble http://localhost:8493
-#
-#  To update data remotely:
-#    ssh pi@<pi-ip-address>
-#    nano /home/pi/SnackoTaskerBoard/data.json
-#    (dashboard auto-refreshes every 30 seconds)
 # ============================================================
 
 PORT=8493
 DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Kill any previous instance
+pkill -f "python3 -m http.server $PORT" 2>/dev/null
 
 echo ""
 echo "  ☠  493rd FS SNACKO OPS DASHBOARD  ☠"
 echo "  ======================================"
 echo "  Serving from: $DIR"
 echo "  URL: http://localhost:$PORT"
-echo "  Press Ctrl+C to stop"
 echo ""
 
+# Start server in background
 cd "$DIR"
-python3 -m http.server "$PORT"
+python3 -m http.server "$PORT" &>/dev/null &
+
+# Wait for server to be ready
+sleep 1
+
+# Launch Chromium in kiosk mode
+chromium-browser --kiosk --noerrdialogs --disable-infobars \
+  --disable-session-crashed-bubble http://localhost:$PORT
