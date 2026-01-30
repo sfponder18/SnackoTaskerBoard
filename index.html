@@ -34,6 +34,13 @@
     overflow-x: hidden;
   }
 
+  /* ---------- AUTO-SCALE LAYOUT ---------- */
+  #app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
   /* ---------- SCANLINE OVERLAY ---------- */
   body::after {
     content: '';
@@ -68,7 +75,7 @@
     background: linear-gradient(180deg, #1a0a0a 0%, var(--bg) 100%);
   }
   .header h1 {
-    font-size: clamp(16px, 2.8vw, 32px);
+    font-size: clamp(18px, 3.5vw, 48px);
     color: var(--red);
     text-shadow: 0 0 10px var(--red), 0 0 30px var(--dk-red);
     letter-spacing: 6px;
@@ -76,7 +83,7 @@
     animation: flicker 4s infinite alternate;
   }
   .header h2 {
-    font-size: clamp(10px, 1.6vw, 20px);
+    font-size: clamp(12px, 2vw, 30px);
     color: var(--gold);
     text-shadow: 0 0 6px var(--gold);
     margin-top: 4px;
@@ -84,7 +91,7 @@
     font-weight: 700;
   }
   .skull-row {
-    font-size: clamp(14px, 2.2vw, 28px);
+    font-size: clamp(16px, 2.8vw, 36px);
     margin-top: 2px;
     filter: drop-shadow(0 0 4px var(--red));
   }
@@ -105,7 +112,7 @@
   }
   .marquee-text {
     display: inline-block;
-    font-size: clamp(8px, 1.2vw, 14px);
+    font-size: clamp(10px, 1.5vw, 20px);
     color: var(--gold);
     font-weight: 700;
     letter-spacing: 2px;
@@ -122,6 +129,7 @@
     flex-direction: column;
     align-items: center;
     padding: 16px 10px 10px;
+    flex: 1;
   }
 
   .leader-section {
@@ -160,14 +168,14 @@
   }
 
   .card-name {
-    font-size: clamp(9px, 1.2vw, 14px);
+    font-size: clamp(11px, 1.6vw, 22px);
     color: var(--cyan);
     margin-bottom: 4px;
     word-break: break-word;
     font-weight: 700;
   }
   .card-role {
-    font-size: clamp(7px, .9vw, 11px);
+    font-size: clamp(9px, 1.1vw, 16px);
     color: var(--red);
     text-transform: uppercase;
     margin-bottom: 4px;
@@ -175,7 +183,7 @@
     font-weight: 700;
   }
   .card-task {
-    font-size: clamp(6px, .8vw, 10px);
+    font-size: clamp(8px, 1vw, 14px);
     color: var(--dim);
     margin-bottom: 6px;
     line-height: 1.5;
@@ -183,7 +191,7 @@
 
   .status {
     display: inline-block;
-    font-size: clamp(6px, .75vw, 9px);
+    font-size: clamp(7px, .9vw, 12px);
     padding: 2px 8px;
     border-radius: 2px;
     text-transform: uppercase;
@@ -195,6 +203,33 @@
   .status-en-route { background: #0a1a2a; color: var(--cyan);  border: 1px solid var(--cyan);  }
   .status-complete { background: #1a0a2a; color: #c77dff;      border: 1px solid #c77dff;      }
   .status-planning { background: #2a1a0a; color: #ff9f43;      border: 1px solid #ff9f43;      }
+
+  /* ---------- STATUS DROPDOWN ---------- */
+  .status-select {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: clamp(7px, .9vw, 12px);
+    padding: 2px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    text-align: center;
+  }
+  .status-select.status-active   { background: #0a2a0a; color: var(--green); border: 1px solid var(--green); }
+  .status-select.status-standby  { background: #2a2a0a; color: var(--gold);  border: 1px solid var(--gold);  }
+  .status-select.status-en-route { background: #0a1a2a; color: var(--cyan);  border: 1px solid var(--cyan);  }
+  .status-select.status-complete { background: #1a0a2a; color: #c77dff;      border: 1px solid #c77dff;      }
+  .status-select.status-planning { background: #2a1a0a; color: #ff9f43;      border: 1px solid #ff9f43;      }
+  .status-select option {
+    background: var(--card);
+    color: var(--text);
+    font-family: 'Courier New', Consolas, monospace;
+  }
 
   /* ---- Connector lines ---- */
   .connector-vertical {
@@ -257,7 +292,7 @@
     padding: 10px;
   }
   .soundboard h3 {
-    font-size: clamp(9px, 1.1vw, 13px);
+    font-size: clamp(11px, 1.4vw, 20px);
     color: var(--red);
     margin-bottom: 10px;
     letter-spacing: 4px;
@@ -272,9 +307,9 @@
   }
   .snd-btn {
     font-family: 'Courier New', Consolas, monospace;
-    font-size: clamp(7px, .8vw, 10px);
+    font-size: clamp(9px, 1vw, 14px);
     font-weight: 700;
-    padding: 8px 14px;
+    padding: 10px 18px;
     border: 2px solid var(--red);
     background: var(--card);
     color: var(--gold);
@@ -325,7 +360,7 @@
   .footer {
     text-align: center;
     padding: 10px;
-    font-size: clamp(7px, .75vw, 9px);
+    font-size: clamp(9px, 1vw, 14px);
     color: var(--dim);
     border-top: 1px solid var(--border);
     margin-top: 12px;
@@ -389,12 +424,14 @@ const DATA = {
   // Sound buttons — drop your .mp3 files in a "sounds" folder
   // next to this html file, then update the filenames here.
   sounds: [
-    { label: "MISSION START", file: "sounds/mission_start.mp3" },
-    { label: "LEVEL UP",      file: "sounds/level_up.mp3"      },
-    { label: "TASK COMPLETE",  file: "sounds/task_complete.mp3" },
-    { label: "GAME OVER",     file: "sounds/game_over.mp3"     },
-    { label: "BONUS",         file: "sounds/bonus.mp3"         },
-    { label: "ALERT",         file: "sounds/alert.mp3"         }
+    { label: "BOB ALERT",         file: "sounds/bob_alert.mp3"         },
+    { label: "BLUE LIGHT",        file: "sounds/blue_light.mp3"        },
+    { label: "FOX 1",             file: "sounds/fox1.mp3"              },
+    { label: "FOX 2",             file: "sounds/fox2.mp3"              },
+    { label: "FOX 3",             file: "sounds/fox3.mp3"              },
+    { label: "SIDEWINDER SEARCH", file: "sounds/sidewinder_search.mp3" },
+    { label: "SIDEWINDER LOCK",   file: "sounds/sidewinder_lock.mp3"   },
+    { label: "RWR INDICATIONS",   file: "sounds/rwr_indications.mp3"   }
   ]
 };
 
@@ -433,6 +470,17 @@ function statusClass(s) {
   return map[(s||'').toLowerCase()] || 'status-active';
 }
 
+const STATUS_OPTIONS = ['ACTIVE', 'STANDBY', 'EN ROUTE', 'COMPLETE', 'PLANNING'];
+
+function makeStatusSelect(currentStatus, key) {
+  const cls = statusClass(currentStatus);
+  const opts = STATUS_OPTIONS.map(function(s) {
+    const sel = s.toUpperCase() === (currentStatus || '').toUpperCase() ? ' selected' : '';
+    return '<option value="' + esc(s) + '"' + sel + '>' + esc(s) + '</option>';
+  }).join('');
+  return '<select class="status-select ' + cls + '" data-key="' + key + '" data-field="status">' + opts + '</select>';
+}
+
 function makeCard(person, isLeader, index) {
   const key = isLeader ? 'leader' : 'member-' + index;
   return `
@@ -440,7 +488,7 @@ function makeCard(person, isLeader, index) {
       <div class="card-name editable" contenteditable="true" data-key="${key}" data-field="name">${esc(person.name)}</div>
       <div class="card-role editable" contenteditable="true" data-key="${key}" data-field="role">${esc(person.role)}</div>
       <div class="card-task editable" contenteditable="true" data-key="${key}" data-field="task">${esc(person.task)}</div>
-      <span class="status ${statusClass(person.status)}">${esc(person.status)}</span>
+      ${makeStatusSelect(person.status, key)}
     </div>`;
 }
 
@@ -538,41 +586,52 @@ function saveData() {
   const toSave = {
     squadronTitle: DATA.squadronTitle,
     subtitle: DATA.subtitle,
-    leader: { name: DATA.leader.name, role: DATA.leader.role, task: DATA.leader.task },
+    leader: { name: DATA.leader.name, role: DATA.leader.role, task: DATA.leader.task, status: DATA.leader.status },
     members: DATA.members.map(function(m) {
-      return { name: m.name, role: m.role, task: m.task };
+      return { name: m.name, role: m.role, task: m.task, status: m.status };
     })
   };
   localStorage.setItem('snackoBoard', JSON.stringify(toSave));
 }
 
+function updateDataField(key, field, value) {
+  if (key === 'header') {
+    DATA[field] = value;
+  } else if (key === 'leader') {
+    DATA.leader[field] = value;
+  } else if (key && key.startsWith('member-')) {
+    const idx = parseInt(key.split('-')[1], 10);
+    if (DATA.members[idx]) DATA.members[idx][field] = value;
+  }
+  saveData();
+}
+
 function setupEditListeners() {
-  document.getElementById('app').addEventListener('blur', function(e) {
+  const app = document.getElementById('app');
+
+  // Editable text fields (blur)
+  app.addEventListener('blur', function(e) {
     const el = e.target;
     if (!el.classList.contains('editable')) return;
-
-    const key   = el.getAttribute('data-key');
-    const field = el.getAttribute('data-field');
-    const value = el.textContent.trim();
-
-    if (key === 'header') {
-      DATA[field] = value;
-    } else if (key === 'leader') {
-      DATA.leader[field] = value;
-    } else if (key && key.startsWith('member-')) {
-      const idx = parseInt(key.split('-')[1], 10);
-      if (DATA.members[idx]) DATA.members[idx][field] = value;
-    }
-
-    saveData();
-  }, true); // useCapture so blur (which doesn't bubble) is caught
+    updateDataField(el.getAttribute('data-key'), el.getAttribute('data-field'), el.textContent.trim());
+  }, true);
 
   // Prevent Enter from inserting newlines — commit edit instead
-  document.getElementById('app').addEventListener('keydown', function(e) {
+  app.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && e.target.classList.contains('editable')) {
       e.preventDefault();
       e.target.blur();
     }
+  });
+
+  // Status dropdown (change)
+  app.addEventListener('change', function(e) {
+    const el = e.target;
+    if (!el.classList.contains('status-select')) return;
+    const value = el.value;
+    updateDataField(el.getAttribute('data-key'), 'status', value);
+    // Update dropdown color class
+    el.className = 'status-select ' + statusClass(value);
   });
 }
 
