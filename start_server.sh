@@ -11,10 +11,14 @@
 # ============================================================
 
 PORT=8493
-DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Always use the directory where this script lives
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Kill any previous instance
 pkill -f "python3 server.py" 2>/dev/null
+pkill -f chromium 2>/dev/null
+sleep 1
 
 echo ""
 echo "  SNACKO OPS DASHBOARD"
@@ -25,11 +29,24 @@ echo ""
 
 # Start server in background
 cd "$DIR"
-python3 server.py &>/dev/null &
+python3 server.py &
+sleep 2
 
-# Wait for server to be ready
-sleep 1
+# Find the right browser command
+BROWSER=""
+for cmd in chromium chromium-browser google-chrome google-chrome-stable firefox; do
+  if command -v "$cmd" &>/dev/null; then
+    BROWSER="$cmd"
+    break
+  fi
+done
 
-# Launch Chromium in kiosk mode
-chromium-browser --kiosk --noerrdialogs --disable-infobars \
-  --disable-session-crashed-bubble http://localhost:$PORT
+if [ -z "$BROWSER" ]; then
+  echo "  No browser found. Open http://localhost:$PORT manually."
+else
+  echo "  Opening $BROWSER..."
+  "$BROWSER" --kiosk --noerrdialogs --disable-infobars \
+    --disable-session-crashed-bubble http://localhost:$PORT &
+fi
+
+wait
