@@ -38,7 +38,8 @@
   #app {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
   }
 
   /* ---------- SCANLINE OVERLAY ---------- */
@@ -130,6 +131,7 @@
     align-items: center;
     padding: 16px 10px 10px;
     flex: 1;
+    min-height: 0;
   }
 
   .leader-section {
@@ -146,7 +148,7 @@
     text-align: center;
     position: relative;
     transition: border-color .3s, box-shadow .3s;
-    min-width: 170px;
+    min-width: 0;
   }
   .card:hover {
     border-color: var(--red);
@@ -267,6 +269,17 @@
     align-self: stretch;
     margin: 0 40px;
     gap: 10px;
+    flex: 1;
+    min-height: 0;
+    align-content: stretch;
+  }
+
+  .members-grid .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    min-width: 0;
   }
 
   @media (min-width: 1100px) {
@@ -287,9 +300,10 @@
 
   /* ---------- SOUND BOARD ---------- */
   .soundboard {
-    margin: 14px auto 0;
+    margin: 0 auto;
     text-align: center;
-    padding: 10px;
+    padding: 8px 10px;
+    flex-shrink: 0;
   }
   .soundboard h3 {
     font-size: clamp(11px, 1.4vw, 20px);
@@ -359,11 +373,10 @@
   /* ---------- FOOTER ---------- */
   .footer {
     text-align: center;
-    padding: 10px;
+    padding: 6px;
     font-size: clamp(9px, 1vw, 14px);
     color: var(--dim);
     border-top: 1px solid var(--border);
-    margin-top: 12px;
   }
 
   /* ---------- STARS BG ---------- */
@@ -418,7 +431,9 @@ const DATA = {
     { name: "A1C Player6",  role: "QUALITY CONTROL",  task: "Taste-test new snacks",          status: "ACTIVE"   },
     { name: "SrA Player7",  role: "LOGISTICS",        task: "Coordinate delivery schedule",   status: "STANDBY"  },
     { name: "A1C Player8",  role: "COMMS",            task: "Update snack menu board",        status: "ACTIVE"   },
-    { name: "Amn Player9",  role: "CLEANUP CREW",     task: "Break room sanitation",          status: "COMPLETE" }
+    { name: "Amn Player9",  role: "CLEANUP CREW",     task: "Break room sanitation",          status: "COMPLETE" },
+    { name: "A1C Player10", role: "SNACK SCOUT",      task: "Research new vendor options",    status: "PLANNING" },
+    { name: "Amn Player11", role: "DELIVERY OPS",     task: "Coordinate weekly deliveries",   status: "STANDBY"  }
   ],
 
   // Sound buttons — drop your .mp3 files in a "sounds" folder
