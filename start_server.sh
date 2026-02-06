@@ -14,10 +14,10 @@ PORT=8493
 DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Kill any previous instance
-pkill -f "python3 -m http.server $PORT" 2>/dev/null
+pkill -f "python3 server.py" 2>/dev/null
 
 echo ""
-echo "  ☠  493rd FS SNACKO OPS DASHBOARD  ☠"
+echo "  SNACKO OPS DASHBOARD"
 echo "  ======================================"
 echo "  Serving from: $DIR"
 echo "  URL: http://localhost:$PORT"
@@ -25,7 +25,7 @@ echo ""
 
 # Start server in background
 cd "$DIR"
-python3 -m http.server "$PORT" &>/dev/null &
+python3 server.py &>/dev/null &
 
 # Wait for server to be ready
 sleep 1

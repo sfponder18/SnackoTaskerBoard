@@ -1,6 +1,7 @@
 {
   "squadronTitle": "493rd FS SNACKO OPS",
   "subtitle": "THE GRIM REAPERS",
+  "marqueeMessage": ">>> REAPER SNACKO OPS -- KEEPING THE 493rd FED AND FUELED -- NO SNACK LEFT BEHIND <<<",
   "leader": {
     "name": "SSgt Snuffy",
     "role": "HEAD SNACKO",
@@ -8,68 +9,23 @@
     "status": "ACTIVE"
   },
   "members": [
-    {
-      "name": "A1C Player1",
-      "role": "SUPPLY RUNNER",
-      "task": "Costco run - bulk snacks",
-      "status": "EN ROUTE"
-    },
-    {
-      "name": "A1C Player2",
-      "role": "INVENTORY MGR",
-      "task": "Count remaining stock",
-      "status": "ACTIVE"
-    },
-    {
-      "name": "SrA Player3",
-      "role": "FUNDS KEEPER",
-      "task": "Collect snack bar dues",
-      "status": "STANDBY"
-    },
-    {
-      "name": "A1C Player4",
-      "role": "FRIDGE TECH",
-      "task": "Restock energy drinks",
-      "status": "ACTIVE"
-    },
-    {
-      "name": "Amn Player5",
-      "role": "MORALE OFFICER",
-      "task": "Plan pizza Friday",
-      "status": "PLANNING"
-    },
-    {
-      "name": "A1C Player6",
-      "role": "QUALITY CONTROL",
-      "task": "Taste-test new snacks",
-      "status": "ACTIVE"
-    },
-    {
-      "name": "SrA Player7",
-      "role": "LOGISTICS",
-      "task": "Coordinate delivery schedule",
-      "status": "STANDBY"
-    },
-    {
-      "name": "A1C Player8",
-      "role": "COMMS",
-      "task": "Update snack menu board",
-      "status": "ACTIVE"
-    },
-    {
-      "name": "Amn Player9",
-      "role": "CLEANUP CREW",
-      "task": "Break room sanitation",
-      "status": "COMPLETE"
-    }
+    { "name": "A1C Player1",  "role": "SUPPLY RUNNER",    "task": "Costco run - bulk snacks",      "status": "EN ROUTE" },
+    { "name": "A1C Player2",  "role": "INVENTORY MGR",    "task": "Count remaining stock",          "status": "ACTIVE"   },
+    { "name": "SrA Player3",  "role": "FUNDS KEEPER",     "task": "Collect snack bar dues",         "status": "STANDBY"  },
+    { "name": "A1C Player4",  "role": "FRIDGE TECH",      "task": "Restock energy drinks",          "status": "ACTIVE"   },
+    { "name": "Amn Player5",  "role": "MORALE OFFICER",   "task": "Plan pizza Friday",              "status": "PLANNING" },
+    { "name": "A1C Player6",  "role": "QUALITY CONTROL",  "task": "Taste-test new snacks",          "status": "ACTIVE"   },
+    { "name": "SrA Player7",  "role": "LOGISTICS",        "task": "Coordinate delivery schedule",   "status": "STANDBY"  },
+    { "name": "A1C Player8",  "role": "COMMS",            "task": "Update snack menu board",        "status": "ACTIVE"   },
+    { "name": "Amn Player9",  "role": "CLEANUP CREW",     "task": "Break room sanitation",          "status": "COMPLETE" },
+    { "name": "A1C Player10", "role": "SNACK SCOUT",      "task": "Research new vendor options",    "status": "PLANNING" },
+    { "name": "Amn Player11", "role": "DELIVERY OPS",     "task": "Coordinate weekly deliveries",   "status": "STANDBY"  }
   ],
   "sounds": [
-    { "label": "MISSION START", "file": "sounds/mission_start.mp3" },
-    { "label": "LEVEL UP", "file": "sounds/level_up.mp3" },
-    { "label": "TASK COMPLETE", "file": "sounds/task_complete.mp3" },
-    { "label": "GAME OVER", "file": "sounds/game_over.mp3" },
-    { "label": "BONUS", "file": "sounds/bonus.mp3" },
-    { "label": "ALERT", "file": "sounds/alert.mp3" }
-  ],
-  "marqueeMessage": ">>> REAPER SNACKO OPS -- KEEPING THE 493rd FED AND FUELED -- NO SNACK LEFT BEHIND <<<"
+    { "label": "BOB ALERT",       "file": "sounds/bob_alert.mp3"       },
+    { "label": "FOX 2",           "file": "sounds/f2goodkill.mp3"      },
+    { "label": "SIDEWINDER LOCK", "file": "sounds/sidewinder_lock.mp3" },
+    { "label": "RWR INDICATIONS", "file": "sounds/rwr_indications.mp3" },
+    { "label": "600 BILLION",     "file": "sounds/600_Bills.mp3"       }
+  ]
 }

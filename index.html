@@ -410,7 +410,7 @@
 //  INLINE DATA — edit this section to update the board
 //  (or SSH in and edit this file directly with nano/vi)
 // ============================================================
-const DATA = {
+const DEFAULT_DATA = {
   squadronTitle: "493rd FS SNACKO OPS",
   subtitle: "THE GRIM REAPERS",
   marqueeMessage: ">>> REAPER SNACKO OPS -- KEEPING THE 493rd FED AND FUELED -- NO SNACK LEFT BEHIND <<<",
@@ -436,8 +436,6 @@ const DATA = {
     { name: "Amn Player11", role: "DELIVERY OPS",     task: "Coordinate weekly deliveries",   status: "STANDBY"  }
   ],
 
-  // Sound buttons — drop your .mp3 files in a "sounds" folder
-  // next to this html file, then update the filenames here.
   sounds: [
     { label: "BOB ALERT",       file: "sounds/bob_alert.mp3"       },
     { label: "FOX 2",           file: "sounds/f2goodkill.mp3"      },
@@ -446,6 +444,58 @@ const DATA = {
     { label: "600 BILLION",    file: "sounds/600_Bills.mp3"      }
   ]
 };
+
+// Live data — will be replaced by server data on load
+let DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+
+// ============================================================
+//  SERVER API
+// ============================================================
+const API_URL = "/api/data";
+let _lastServerJSON = "";
+let _isSaving = false;
+
+async function fetchData() {
+  try {
+    const resp = await fetch(API_URL, { cache: "no-store" });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    return await resp.text();
+  } catch (e) {
+    console.warn("Could not fetch from server:", e.message);
+    return null;
+  }
+}
+
+async function postData(data) {
+  _isSaving = true;
+  try {
+    const json = JSON.stringify(data, null, 2);
+    const resp = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: json
+    });
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    _lastServerJSON = json;
+  } catch (e) {
+    console.warn("Could not save to server:", e.message);
+  } finally {
+    _isSaving = false;
+  }
+}
+
+function buildSavePayload() {
+  return {
+    squadronTitle: DATA.squadronTitle,
+    subtitle: DATA.subtitle,
+    marqueeMessage: DATA.marqueeMessage,
+    leader: { name: DATA.leader.name, role: DATA.leader.role, task: DATA.leader.task, status: DATA.leader.status },
+    members: DATA.members.map(function(m) {
+      return { name: m.name, role: m.role, task: m.task, status: m.status };
+    }),
+    sounds: DATA.sounds
+  };
+}
 
 // ============================================================
 //  GENERATE STARS
@@ -576,7 +626,7 @@ function playSound(btn) {
 // ============================================================
 //  EDITABLE FIELDS — inline editing with localStorage
 // ============================================================
-function loadSavedData() {
+function loadLocalStorage() {
   const saved = localStorage.getItem('snackoBoard');
   if (!saved) return;
   try {
@@ -594,16 +644,19 @@ function loadSavedData() {
   }
 }
 
+function applyServerData(parsed) {
+  DATA.squadronTitle = parsed.squadronTitle || DATA.squadronTitle;
+  DATA.subtitle = parsed.subtitle || DATA.subtitle;
+  DATA.marqueeMessage = parsed.marqueeMessage || DATA.marqueeMessage;
+  if (parsed.leader) Object.assign(DATA.leader, parsed.leader);
+  if (parsed.members) DATA.members = parsed.members;
+  if (parsed.sounds) DATA.sounds = parsed.sounds;
+}
+
 function saveData() {
-  const toSave = {
-    squadronTitle: DATA.squadronTitle,
-    subtitle: DATA.subtitle,
-    leader: { name: DATA.leader.name, role: DATA.leader.role, task: DATA.leader.task, status: DATA.leader.status },
-    members: DATA.members.map(function(m) {
-      return { name: m.name, role: m.role, task: m.task, status: m.status };
-    })
-  };
-  localStorage.setItem('snackoBoard', JSON.stringify(toSave));
+  const payload = buildSavePayload();
+  postData(payload);
+  localStorage.setItem('snackoBoard', JSON.stringify(payload));
 }
 
 function updateDataField(key, field, value) {
@@ -648,11 +701,44 @@ function setupEditListeners() {
 }
 
 // ============================================================
+//  POLLING — refresh from server every 3 seconds
+// ============================================================
+async function pollServer() {
+  if (_isSaving) return;
+  const json = await fetchData();
+  if (json === null) return;
+  if (json === _lastServerJSON) return;
+  _lastServerJSON = json;
+  try {
+    applyServerData(JSON.parse(json));
+    render(DATA);
+    setupEditListeners();
+  } catch (e) {
+    console.warn("Poll: bad JSON from server:", e);
+  }
+}
+
+// ============================================================
 //  INIT
 // ============================================================
-loadSavedData();
-render(DATA);
-setupEditListeners();
+async function init() {
+  const serverJSON = await fetchData();
+  if (serverJSON) {
+    try {
+      applyServerData(JSON.parse(serverJSON));
+      _lastServerJSON = serverJSON;
+    } catch (e) {
+      console.warn("Bad JSON from server, using defaults:", e);
+    }
+  } else {
+    loadLocalStorage();
+  }
+  render(DATA);
+  setupEditListeners();
+  setInterval(pollServer, 3000);
+}
+
+init();
 </script>
 </body>
 </html>
